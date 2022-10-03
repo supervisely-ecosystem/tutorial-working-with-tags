@@ -79,10 +79,10 @@ for dataset_id in dataset_ids:
 
         # download annotation
         ann_json = api.annotation.download_json(image_id=image_id)
-        ann = sly.Annotation.from_json(data=ann_json)
+        ann = sly.Annotation.from_json(data=ann_json, project_meta=project_meta)
 
         # create and assign Tag to image
-        fruits_count_tag = sly.Tag(meta=fruits_count_tag_meta)
+        fruits_count_tag = sly.Tag(meta=fruits_count_tag_meta, value=len(ann.labels))
         ann = ann.add_tag(fruits_count_tag)
 
         # cycle through objects in annotation and assign appropriate tag
