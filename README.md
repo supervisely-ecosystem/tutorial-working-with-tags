@@ -59,7 +59,7 @@ import supervisely as sly
 
 ### Init API client
 
-Init API for communicating with Supervisely Instance. First, we load environment variables with credentials and workspace ID:
+Init API for communicating with Supervisely Instance. First, we load environment variables with credentials and project ID:
 
 ```python
 load_dotenv("local.env")
