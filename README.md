@@ -1,6 +1,6 @@
-# All about Tags
+# Tagging Images and Objects
 
-[Read this tutorial in developer portal.](https://developer.supervise.ly/advanced-user-guide/all-about-tags)
+[Read this tutorial in developer portal.](https://developer.supervise.ly/advanced-user-guide/tagging-images-and-objects)
 
 ## Introduction
 
@@ -16,7 +16,6 @@ You will learn:
 ## How to debug this tutorial
 
 **Step 1.** Prepare `~/supervisely.env` file with credentials. [Learn more here.](https://developer.supervise.ly/getting-started/basics-of-authentication#how-to-use-in-python)
-
 
 
 **Step 2.** Clone [repository](https://github.com/supervisely-ecosystem/tutorial-working-with-tags) with source code and demo data and create [Virtual Environment](https://docs.python.org/3/library/venv.html).
@@ -69,12 +68,15 @@ api = sly.Api()
 
 ### Create Tag Meta
 
+TagMeta object contains general information about Tag.
 In order to create Tag itself you must create TagMeta object with parameters such as:
-* name: string (required)
-* value_type: sly.TagValueType (required)
-* color: List[int]
-* applicable_to:  sly.TagApplicableTo
-* applicable_classes: List[str]
+
+* name - name of the Tag (required)
+* value_type - restricts Tag to have a certain value type. Learn more [here](https://supervisely.readthedocs.io/en/v6.66.2/sdk/supervisely.annotation.tag_meta.TagValueType.html) (required)
+* possible_values - list of possible Tag values, used when Tag value type is "oneof_string", defaults to "None" (optional)
+* color - color of the Tag, must be an RGB value, if not specified, random color will be generated (optional)
+* applicable_to - defines applicability of Tag only to images, objects or both, defaults to both. (optional)
+* applicable_classes - defines applicability of Tag only to certain classes. (optional)
 
 Let's start with creating a simple TagMeta for Lemon. 
 This TagMeta object can be applied to both images and objects, and also to any class
@@ -82,35 +84,38 @@ This TagMeta object can be applied to both images and objects, and also to any c
 ```python
 lemon_tag_meta = sly.TagMeta(name="lemon", value_type=sly.TagValueType.NONE)
 print(lemon_tag_meta)
-# Name:  lemon
-# Value type:none
-# Possible values:None
+# Name: lemon
+# Value type: none
+# Possible values: None
 # Hotkey
-# Applicable toall
-# Applicable classes[]
+# Applicable to all
+# Applicable classes []
 ```
 
 Let's change applicable classes of this TagMeta to class "lemon" only and make it applicable only to objects.
-We can recreate TagMeta or clone already existing TagMeta with additional parameters.
+We can recreate TagMeta with additional parameters.
 Most supervisely classes are immutable, so you have to assign or reassign them to variables.
 
 ```python
-lemon_tag_meta = lemon_tag_meta.clone(
+lemon_tag_meta = sly.TagMeta(
+    name="lemon", 
+    value_type=sly.TagValueType.NONE,
     applicable_to=sly.TagApplicableTo.OBJECTS_ONLY, applicable_classes=["lemon"]
-)
+    )
+
 print(lemon_tag_meta)
-# Name:  lemon
-# Value type:none
-# Possible values:None
+# Name: lemon
+# Value type: none
+# Possible values: None
 # Hotkey
-# Applicable toobjectsOnly
-# Applicable classes['lemon']
+# Applicable to objectsOnly
+# Applicable classes ['lemon']
 ```
 
 Now let's create a TagMeta for "kiwi" with "oneof_string" value type
 
 ```python
-possible_kiwi_values = ["fresh", "ripe", "old", "rotten"]
+possible_kiwi_values = ["small", "medium", "big"]
 kiwi_tag_meta = sly.TagMeta(
     name="kiwi",
     applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
@@ -118,35 +123,52 @@ kiwi_tag_meta = sly.TagMeta(
     possible_values=possible_kiwi_values,
 )
 print(kiwi_tag_meta)
-# Name:  kiwi
-# Value type:oneof_string
-# Possible values:['fresh', 'ripe', 'old', 'rotten']
+# Name: kiwi
+# Value type: oneof_string
+# Possible values: ['fresh', 'ripe', 'old', 'rotten']
 # Hotkey
-# Applicable toall
-# Applicable classes[]
+# Applicable to all
+# Applicable classes []
 ```
 
 Now we create a tag meta with "any_number" value type for counting total fruits on image.
 
 ```python
 fruits_count_tag_meta = sly.TagMeta(
-    "fruits count",
+    name="fruits count",
     value_type=sly.TagValueType.ANY_NUMBER,
     applicable_to=sly.TagApplicableTo.IMAGES_ONLY,
 )
 print(fruits_count_tag_meta)
-# Name:  fruits count
-# Value type:any_number
-# Possible values:None
+# Name: fruits count
+# Value type: any_number
+# Possible values: None
 # Hotkey
-# Applicable toimagesOnly
-# Applicable classes[]
+# Applicable to imagesOnly
+# Applicable classes []
 ```
 
+And one more Tag Meta with "any_string" value type to enter the origin of the fruit into it
+
+```python
+fruit_origin_tag_meta = sly.TagMeta(
+    name="imported from", 
+    value_type=sly.TagValueType.ANY_STRING, 
+    applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
+    applicable_classes=["lemon", "kiwi"]
+    )
+print(fruit_origin_tag_meta)
+# Name: fruits count
+# Value type: any_string
+# Possible values: None
+# Hotkey
+# Applicable to objectsOnly
+# Applicable classes ["lemon", "kiwi]
+```
 Bring all created tag metas together in a list
 
 ```python
-tag_metas = [lemon_tag_meta, kiwi_tag_meta, fruits_count_tag_meta]
+tag_metas = [lemon_tag_meta, kiwi_tag_meta, fruits_count_tag_meta, fruit_origin_tag_meta]
 ```
 
 ## **Part 2.** Add TagMetas to project
@@ -181,20 +203,16 @@ api.project.update_meta(id=project_id, meta=project_meta)
 ## **Part 3.** Create Tags from Tag Metas and update annotation on server
 
 ```python
-# get list of datasets by project id
+# get list of datasets in our project
 datasets = api.dataset.get_list(project_id)
 dataset_ids = [dataset.id for dataset in datasets]
-# cycle through all images in project datasets
+# iterate over all images in project datasets
 for dataset_id in dataset_ids:
-    # get list of images in dataset by id
+    # get list of images in dataset
     images_infos = api.image.get_list(dataset_id=dataset_id)
     for image_info in images_infos:
         # get image id from image info
         image_id = image_info.id
-
-        # check image tags
-        image_tags = image_info.tags
-        print(f"{image_info.name} tags: {image_tags}")
 
         # download annotation
         ann_json = api.annotation.download_json(image_id=image_id)
@@ -204,16 +222,18 @@ for dataset_id in dataset_ids:
         fruits_count_tag = sly.Tag(meta=fruits_count_tag_meta, value=len(ann.labels))
         ann = ann.add_tag(fruits_count_tag)
 
-        # cycle through objects in annotation and assign appropriate tag
+        # iterate over objects in annotation and assign appropriate tag
         new_labels = []
         for label in ann.labels:
             new_label = None
             if label.obj_class.name == "lemon":
                 lemon_tag = sly.Tag(meta=lemon_tag_meta)
-                new_label = label.add_tag(lemon_tag)
+                origin_tag = sly.Tag(meta=fruit_origin_tag_meta, value="Spain")
+                new_label = label.add_tags([lemon_tag, origin_tag])
             elif label.obj_class.name == "kiwi":
-                kiwi_tag = sly.Tag(meta=kiwi_tag_meta, value="fresh")
-                new_label = label.add_tag(kiwi_tag)
+                kiwi_tag = sly.Tag(meta=kiwi_tag_meta, value="medium")
+                origin_tag = sly.Tag(meta=fruit_origin_tag_meta, value="Italy")
+                new_label = label.add_tags([kiwi_tag, origin_tag])
             if new_label:
                 new_labels.append(new_label)
 
@@ -228,6 +248,52 @@ for dataset_id in dataset_ids:
 
 Advanced API allows user to add tags directly to images or objects without downloading annotation data from server.
 
+### Check image Tags
+
+Get project meta again after updating it with new tags
+
+```python
+project_meta_json = api.project.get_meta(id=project_id)
+project_meta = sly.ProjectMeta.from_json(data=project_meta_json)
+
+# get image id from image info (see part 3)
+image_id = image_info.id
+
+# check image tags
+image_tags = image_info.tags
+print(f"{image_info.name} tags: {image_tags}")
+# IMG_1836.jpeg tags: 
+# [
+#   {
+#       'entityId': 3315606, 
+#       'tagId': 369190,
+#       'id': 2298259,
+#       'value': 3,
+#       'labelerLogin': 'cxnt',
+#       'createdAt': '2022-10-04T15:43:12.155Z',
+#       'updatedAt': '2022-10-04T15:43:12.155Z'
+#   }
+# ]
+
+# get all tag meta ids in a list
+image_tags_ids = [img_tag["tagId"] for img_tag in image_tags]
+
+img_tag_metas = []
+# compare tag meta ids from image with tag meta ids from project meta
+for tag_meta in project_meta.tag_metas:
+    if tag_meta.sly_id in image_tags_ids:
+        img_tag_metas.append(tag_meta)
+
+# create TagMetaCollection
+img_tag_metas_col = sly.TagMetaCollection(img_tag_metas)
+print(img_tag_metas_col)
+# +--------------+------------+-----------------+--------+---------------+--------------------+
+# |     Name     | Value type | Possible values | Hotkey | Applicable to | Applicable classes |
+# +--------------+------------+-----------------+--------+---------------+--------------------+
+# | fruits count | any_number |       None      |        |   imagesOnly  |         []         |
+# +--------------+------------+-----------------+--------+---------------+--------------------+
+```
+
 ### Add Tag directly to image
 
 Get project meta again after updating it with new tags
@@ -240,13 +306,13 @@ project_meta = sly.ProjectMeta.from_json(data=project_meta_json)
 Get image tag ID from project meta
 
 ```python
-image_tag_id = project_meta.get_tag_meta(fruits_count_tag_meta.name).sly_id
+fruits_count_tag_meta = project_meta.get_tag_meta(fruits_count_tag_meta.name)
 ```
 
 Add Tag to image using Tag supervisely ID from project meta
 
 ```python
-api.image.add_tag(image_id=image_id, tag_id=image_tag_id, value=7)
+api.image.add_tag(image_id=image_id, tag_id=fruits_count_tag_meta.sly_id, value=7)
 ```
 
 ### Add Tags to objects directly
@@ -254,7 +320,7 @@ api.image.add_tag(image_id=image_id, tag_id=image_tag_id, value=7)
 ```python
 ann_json = api.annotation.download_json(image_id=image_id)
 ann = sly.Annotation.from_json(data=ann_json, project_meta=project_meta)
-# Cycle through objects in annotation and add appropriate tag
+# iterate over objects in annotation and add appropriate tag
 for label in ann.labels:
     # Get figure sly id
     figure_id = label.geometry.sly_id

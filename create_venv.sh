@@ -10,11 +10,11 @@ if [ -d ".venv" ]; then
 fi
 
 echo "VENV will be created" && \
-python -m venv .venv && \
+python3 -m venv .venv && \
 source .venv/bin/activate && \
 
 echo "Install requirements..." && \
-pip install -r requirements.txt && \
+pip3 install -r requirements.txt && \
 echo "Requirements have been successfully installed" && \
 echo "Testing imports, please wait a minute ..." && \
 python -c "import supervisely as sly" && \
