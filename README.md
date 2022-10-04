@@ -120,12 +120,12 @@ kiwi_tag_meta = sly.TagMeta(
     name="kiwi",
     applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
     value_type=sly.TagValueType.ONEOF_STRING,
-    possible_values=possible_kiwi_values,
+    possible_values=possible_kiwi_values
 )
 print(kiwi_tag_meta)
 # Name: kiwi
 # Value type: oneof_string
-# Possible values: ['fresh', 'ripe', 'old', 'rotten']
+# Possible values: ["small", "medium", "big"]
 # Hotkey
 # Applicable to all
 # Applicable classes []
@@ -137,7 +137,7 @@ Now we create a TagMeta with "any_number" value type for counting total fruits o
 fruits_count_tag_meta = sly.TagMeta(
     name="fruits count",
     value_type=sly.TagValueType.ANY_NUMBER,
-    applicable_to=sly.TagApplicableTo.IMAGES_ONLY,
+    applicable_to=sly.TagApplicableTo.IMAGES_ONLY
 )
 print(fruits_count_tag_meta)
 # Name: fruits count
@@ -163,7 +163,7 @@ print(fruit_origin_tag_meta)
 # Possible values: None
 # Hotkey
 # Applicable to objectsOnly
-# Applicable classes ["lemon", "kiwi]
+# Applicable classes ["lemon", "kiwi"]
 ```
 Bring all created TagMetas together in a list
 
@@ -198,7 +198,7 @@ Update project meta on Supervisely instance after adding Tag Metas to project me
 api.project.update_meta(id=project_id, meta=project_meta)
 ```
 
-![Updated Tags](https://user-images.githubusercontent.com/48913536/193692445-0179e903-9591-4525-95fe-0d8a5eb35aed.png)
+![Updated Tags](https://user-images.githubusercontent.com/48913536/193874185-e05428f2-9c0b-44fc-83fc-5b5c8a452098.png)
 
 ## **Part 3.** Create Tags from Tag Metas and update annotation on server
 
@@ -242,7 +242,7 @@ for dataset_id in dataset_ids:
         api.annotation.upload_ann(img_id=image_id, ann=ann)
 ```
 
-![Result](https://user-images.githubusercontent.com/48913536/193692460-edcd4767-343d-409a-b312-8dc047de1baf.png)
+![Result](https://user-images.githubusercontent.com/48913536/193875426-75a16ebe-16bc-4c41-83b1-e07448dc749c.png)
 
 # Advanced API
 
