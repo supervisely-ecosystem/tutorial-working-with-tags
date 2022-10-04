@@ -21,7 +21,7 @@ lemon_tag_meta = lemon_tag_meta.clone(
 )
 
 # Now let's create a TagMeta for "kiwi" with "oneof_string" value type
-possible_kiwi_values = ["fresh", "ripe", "old", "rotten"]
+possible_kiwi_values = ["small", "medium", "big"]
 kiwi_tag_meta = sly.TagMeta(
     name="kiwi",
     applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
@@ -31,13 +31,27 @@ kiwi_tag_meta = sly.TagMeta(
 
 # Now we create a tag meta with "any_number" value type for counting fruits on image
 fruits_count_tag_meta = sly.TagMeta(
-    "fruits count",
+    name="fruits count",
     value_type=sly.TagValueType.ANY_NUMBER,
     applicable_to=sly.TagApplicableTo.IMAGES_ONLY,
 )
 
+
+fruit_origin_tag_meta = sly.TagMeta(
+    name="imported from",
+    value_type=sly.TagValueType.ANY_STRING,
+    applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
+    applicable_classes=["lemon", "kiwi"],
+)
+
+
 # Bring all created tag metas together in TagMetaCollection or list
-tag_metas = [lemon_tag_meta, kiwi_tag_meta, fruits_count_tag_meta]
+tag_metas = [
+    lemon_tag_meta,
+    kiwi_tag_meta,
+    fruits_count_tag_meta,
+    fruit_origin_tag_meta,
+]
 
 ###################################
 # Part 2. Add TagMetas to project #
@@ -73,10 +87,6 @@ for dataset_id in dataset_ids:
         # get image id from image info
         image_id = image_info.id
 
-        # check image tags
-        image_tags = image_info.tags
-        print(f"{image_info.name} tags: {image_tags}")
-
         # download annotation
         ann_json = api.annotation.download_json(image_id=image_id)
         ann = sly.Annotation.from_json(data=ann_json, project_meta=project_meta)
@@ -91,10 +101,12 @@ for dataset_id in dataset_ids:
             new_label = None
             if label.obj_class.name == "lemon":
                 lemon_tag = sly.Tag(meta=lemon_tag_meta)
-                new_label = label.add_tag(lemon_tag)
+                origin_tag = sly.Tag(meta=fruit_origin_tag_meta, value="Spain")
+                new_label = label.add_tags([lemon_tag, origin_tag])
             elif label.obj_class.name == "kiwi":
-                kiwi_tag = sly.Tag(meta=kiwi_tag_meta, value="fresh")
-                new_label = label.add_tag(kiwi_tag)
+                kiwi_tag = sly.Tag(meta=kiwi_tag_meta, value="medium")
+                origin_tag = sly.Tag(meta=fruit_origin_tag_meta, value="Italy")
+                new_label = label.add_tags([kiwi_tag, origin_tag])
             if new_label:
                 new_labels.append(new_label)
 
