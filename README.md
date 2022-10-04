@@ -131,7 +131,7 @@ print(kiwi_tag_meta)
 # Applicable classes []
 ```
 
-Now we create a tag meta with "any_number" value type for counting total fruits on image.
+Now we create a TagMeta with "any_number" value type for counting total fruits on image.
 
 ```python
 fruits_count_tag_meta = sly.TagMeta(
@@ -148,7 +148,7 @@ print(fruits_count_tag_meta)
 # Applicable classes []
 ```
 
-And one more Tag Meta with "any_string" value type to enter the origin of the fruit into it
+And one more TagMeta with "any_string" value type to enter the origin of the fruit into it
 
 ```python
 fruit_origin_tag_meta = sly.TagMeta(
@@ -165,7 +165,7 @@ print(fruit_origin_tag_meta)
 # Applicable to objectsOnly
 # Applicable classes ["lemon", "kiwi]
 ```
-Bring all created tag metas together in a list
+Bring all created TagMetas together in a list
 
 ```python
 tag_metas = [lemon_tag_meta, kiwi_tag_meta, fruits_count_tag_meta, fruit_origin_tag_meta]

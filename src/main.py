@@ -29,7 +29,7 @@ kiwi_tag_meta = sly.TagMeta(
     possible_values=possible_kiwi_values,
 )
 
-# Now we create a tag meta with "any_number" value type for counting fruits on image
+# Now we create a TagMeta with "any_number" value type for counting fruits on image
 fruits_count_tag_meta = sly.TagMeta(
     name="fruits count",
     value_type=sly.TagValueType.ANY_NUMBER,
@@ -37,6 +37,7 @@ fruits_count_tag_meta = sly.TagMeta(
 )
 
 
+# and one more TagMeta with "any_string" value type to enter the origin of the fruit into it
 fruit_origin_tag_meta = sly.TagMeta(
     name="imported from",
     value_type=sly.TagValueType.ANY_STRING,
@@ -45,7 +46,7 @@ fruit_origin_tag_meta = sly.TagMeta(
 )
 
 
-# Bring all created tag metas together in TagMetaCollection or list
+# Bring all created TagMetas together in TagMetaCollection or list
 tag_metas = [
     lemon_tag_meta,
     kiwi_tag_meta,
@@ -76,10 +77,10 @@ api.project.update_meta(id=project_id, meta=project_meta)
 # Part 3. Create Tags from Tag Metas and update annotation on server #
 ######################################################################
 
-# get list of datasets by project id
+# get list of datasets in our project
 datasets = api.dataset.get_list(project_id)
 dataset_ids = [dataset.id for dataset in datasets]
-# cycle through all images in project datasets
+# iterate over all images in project datasets
 for dataset_id in dataset_ids:
     # get list of images in dataset by id
     images_infos = api.image.get_list(dataset_id=dataset_id)
@@ -95,7 +96,7 @@ for dataset_id in dataset_ids:
         fruits_count_tag = sly.Tag(meta=fruits_count_tag_meta, value=len(ann.labels))
         ann = ann.add_tag(fruits_count_tag)
 
-        # cycle through objects in annotation and assign appropriate tag
+        # iterate over objects in annotation and assign appropriate tag
         new_labels = []
         for label in ann.labels:
             new_label = None
