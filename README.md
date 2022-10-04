@@ -200,7 +200,7 @@ api.project.update_meta(id=project_id, meta=project_meta)
 
 ![Updated Tags](https://user-images.githubusercontent.com/48913536/193874185-e05428f2-9c0b-44fc-83fc-5b5c8a452098.png)
 
-## **Part 3.** Create Tags from Tag Metas and update annotation on server
+## **Part 3.** Create Tags and update annotation on server
 
 ```python
 # get list of datasets in our project

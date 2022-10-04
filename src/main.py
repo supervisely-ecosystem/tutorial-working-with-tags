@@ -74,7 +74,7 @@ for tag_meta in tag_metas:
 api.project.update_meta(id=project_id, meta=project_meta)
 
 ######################################################################
-# Part 3. Create Tags from Tag Metas and update annotation on server #
+# Part 3. Create Tags and update annotation on server #
 ######################################################################
 
 # get list of datasets in our project
