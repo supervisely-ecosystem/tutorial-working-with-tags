@@ -248,7 +248,7 @@ for dataset_id in dataset_ids:
 
 Advanced API allows user to add tags directly to images or objects without downloading annotation data from server.
 
-### Check image Tags
+### Create TagMeta collection from image Tags without downloading annotation
 
 Get project meta again after updating it with new tags
 
