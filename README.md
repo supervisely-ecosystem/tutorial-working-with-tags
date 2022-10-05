@@ -335,7 +335,7 @@ fruits_count_tag_meta = project_meta.get_tag_meta("fruits_count")
 Add Tag to image using Tag supervisely ID from project meta
 
 ```python
-api.image.add_tag(image_id=image_id, tag_id=fruits_count_tag_meta.sly_id, value=7)
+api.image.add_tag(image_id=image_id, tag_id=fruits_count_tag_meta.sly_id, value=3)
 ```
 
 ### Add Tags to objects directly
