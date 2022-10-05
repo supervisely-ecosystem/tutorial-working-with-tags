@@ -73,13 +73,32 @@ In order to create Tag itself you must create TagMeta object (information about 
 
 * name (required) - name of the Tag.
 * value_type (required)- restricts Tag to have a certain value type. Available value types:
+```py
+sly.TagValueType.NONE # "none"
+sly.TagValueType.NONE # "none"
+sly.TagValueType.NONE # "none"
+sly.TagValueType.NONE # "none"
+sly.TagValueType.NONE # "none"
   * NONE = "none"
   * ANY_STRING = "any_string"
   * ANY_NUMBER = "any_number"
   * ONEOF_STRING = "oneof_string"
+```
+
 * possible_values (required if value type is "oneof_string") - list of possible Tag values.
 * color (optional) - color of the Tag, must be an RGB value, if not specified, random color will be generated.
 * applicable_to (optional) - defines if Tag can be assigned to only images, to only objects or both. By default tag can be assigned to both images and objects.
+```py
+sly.TagValueType.NONE # "none"
+sly.TagValueType.NONE # "none"
+sly.TagValueType.NONE # "none"
+sly.TagValueType.NONE # "none"
+sly.TagValueType.NONE # "none"
+  * sly.TagApplicableTo.IMAGES_ONLY = "none"
+  * sly.TagApplicableTo.IMAGES_ONLY = "any_string"
+  * ANY_NUMBER = "any_number"
+  * ONEOF_STRING = "oneof_string"
+```
 * applicable_classes (optional) - defines applicability of Tag only to certain classes. List of strings (class names).
 
 Let's start with creating a simple TagMeta for showcasing, it can be applied to both images and objects, and also to any class. We won't use it for our project later.
