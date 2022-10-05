@@ -127,7 +127,7 @@ print(kiwi_tag_meta)
 # Value type: oneof_string
 # Possible values: ["small", "medium", "big"]
 # Hotkey
-# Applicable to all
+# Applicable to objectsOnly
 # Applicable classes []
 ```
 
@@ -184,7 +184,7 @@ project_meta = sly.ProjectMeta.from_json(data=project_meta_json)
 ![Project Meta before adding Tags](https://user-images.githubusercontent.com/48913536/193692433-806cb981-cc12-4d60-af25-9777b2bfe3f5.png)
 
 
-Check that created Tag Metas for lemon and kiwi don't already exist in project meta, and if not, add them to project meta.
+Check that created Tag Metas don't already exist in project meta, and if not, add them to project meta.
 
 ```python
 for tag_meta in tag_metas:
@@ -237,7 +237,7 @@ for dataset_id in dataset_ids:
             if new_label:
                 new_labels.append(new_label)
 
-        # upload updated ann to Supervisely instance
+        # update and upload ann to Supervisely instance
         ann = ann.clone(labels=new_labels)
         api.annotation.upload_ann(img_id=image_id, ann=ann)
 ```
@@ -246,7 +246,7 @@ for dataset_id in dataset_ids:
 
 # Advanced API
 
-Advanced API allows user to add tags directly to images or objects without downloading annotation data from server.
+Advanced API allows user to manage tags directly on images or objects without downloading annotation data from server.
 
 ### Create TagMeta collection from image Tags without downloading annotation
 
