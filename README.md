@@ -277,14 +277,14 @@ for dataset_id in dataset_ids:
 
 Advanced API allows user to manage tags directly on images or objects without downloading annotation data from server.
 
-### Create TagMeta collection from image Tags without downloading annotation
-
 Get project meta again after updating it with new tags
 
 ```python
 project_meta_json = api.project.get_meta(id=project_id)
 project_meta = sly.ProjectMeta.from_json(data=project_meta_json)
 ```
+
+### Create TagMeta collection from image Tags without downloading annotation
 
 Get image id from image info (see [part 3](#part-3-create-tags-and-update-annotation-on-server))
 
@@ -310,43 +310,26 @@ print(f"{image_info.name} tags: {image_tags}")
 # ]
 ```
 
-Get all tag meta ids in a list
+Create TagCollection from image tags
 
 ```python
-image_tags_ids = [img_tag["tagId"] for img_tag in image_tags]
-```
-
-Create TagMetaCollection by comparing tag meta ids from image with tag meta ids from project meta
-
-```python
-img_tag_metas = []
-for tag_meta in project_meta.tag_metas:
-    if tag_meta.sly_id in image_tags_ids:
-        img_tag_metas.append(tag_meta)
-
-# create TagMetaCollection
-img_tag_metas_col = sly.TagMetaCollection(img_tag_metas)
-print(img_tag_metas_col)
-# +--------------+------------+-----------------+--------+---------------+--------------------+
-# |     Name     | Value type | Possible values | Hotkey | Applicable to | Applicable classes |
-# +--------------+------------+-----------------+--------+---------------+--------------------+
-# | fruits_count | any_number |       None      |        |   imagesOnly  |         []         |
-# +--------------+------------+-----------------+--------+---------------+--------------------+
+tag_collection = sly.TagCollection().from_api_response(
+    data=image_tags, tag_meta_collection=project_meta.tag_metas
+)
+print(tag_collection)
+# +--------------+------------+-------+
+# |     Name     | Value type | Value |
+# +--------------+------------+-------+
+# | fruits_count | any_number |   3   |
+# +--------------+------------+-------+
 ```
 
 ### Add Tag directly to image
 
-Get project meta again after updating it with new tags
-
-```python
-project_meta_json = api.project.get_meta(id=project_id)
-project_meta = sly.ProjectMeta.from_json(data=project_meta_json)
-```
-
 Get image tag ID from project meta
 
 ```python
-fruits_count_tag_meta = project_meta.get_tag_meta(fruits_count_tag_meta.name)
+fruits_count_tag_meta = project_meta.get_tag_meta("fruits_count")
 ```
 
 Add Tag to image using Tag supervisely ID from project meta
@@ -366,9 +349,9 @@ for label in ann.labels:
     figure_id = label.geometry.sly_id
     if label.obj_class.name == "lemon":
         # Get tag sly id
-        tag_meta_id = project_meta.get_tag_meta(lemon_tag_meta.name).sly_id
-        api.advanced.add_tag_to_object(tag_meta_id=tag_meta_id, figure_id=figure_id)
+        tag_meta_id = project_meta.get_tag_meta("fruit_name").sly_id
+        api.advanced.add_tag_to_object(tag_meta_id=tag_meta_id, figure_id=figure_id, value="lemon")
     elif label.obj_class.name == "kiwi":
-        tag_meta_id = project_meta.get_tag_meta(kiwi_tag_meta.name).sly_id
-        api.advanced.add_tag_to_object(tag_meta_id=tag_meta_id, figure_id=figure_id, value="fresh")
+        tag_meta = project_meta.get_tag_meta("fruit_name")
+        api.advanced.add_tag_to_object(tag_meta_id=tag_meta.sly_id, figure_id=figure_id, value="kiwi")
 ```
