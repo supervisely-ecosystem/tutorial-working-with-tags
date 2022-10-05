@@ -255,11 +255,16 @@ Get project meta again after updating it with new tags
 ```python
 project_meta_json = api.project.get_meta(id=project_id)
 project_meta = sly.ProjectMeta.from_json(data=project_meta_json)
+```
 
-# get image id from image info (see part 3)
+Get image id from image info (see part 3)
+
+```python
 image_id = image_info.id
+```
+Get image tags
 
-# check image tags
+```python
 image_tags = image_info.tags
 print(f"{image_info.name} tags: {image_tags}")
 # IMG_1836.jpeg tags: 
@@ -274,12 +279,18 @@ print(f"{image_info.name} tags: {image_tags}")
 #       'updatedAt': '2022-10-04T15:43:12.155Z'
 #   }
 # ]
+```
 
-# get all tag meta ids in a list
+Get all tag meta ids in a list
+
+```python
 image_tags_ids = [img_tag["tagId"] for img_tag in image_tags]
+```
 
+Create TagMetaCollection by comparing tag meta ids from image with tag meta ids from project meta
+
+```python
 img_tag_metas = []
-# compare tag meta ids from image with tag meta ids from project meta
 for tag_meta in project_meta.tag_metas:
     if tag_meta.sly_id in image_tags_ids:
         img_tag_metas.append(tag_meta)
