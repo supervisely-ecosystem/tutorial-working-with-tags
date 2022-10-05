@@ -277,14 +277,14 @@ for dataset_id in dataset_ids:
 
 Advanced API allows user to manage tags directly on images or objects without downloading annotation data from server.
 
-Get project meta again after updating it with new tags
+Get project meta again after updating it with new tags.
 
 ```python
 project_meta_json = api.project.get_meta(id=project_id)
 project_meta = sly.ProjectMeta.from_json(data=project_meta_json)
 ```
 
-### Create TagMeta collection from image Tags without downloading annotation
+### Create TagCollection from image Tags without downloading annotation
 
 Get image id from image info (see [part 3](#part-3-create-tags-and-update-annotation-on-server))
 
