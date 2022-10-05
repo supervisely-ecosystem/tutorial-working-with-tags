@@ -345,13 +345,12 @@ ann_json = api.annotation.download_json(image_id=image_id)
 ann = sly.Annotation.from_json(data=ann_json, project_meta=project_meta)
 # iterate over objects in annotation and add appropriate tag
 for label in ann.labels:
-    # Get figure sly id
+    # get figure sly id
     figure_id = label.geometry.sly_id
+    # get tag sly id
+    tag_meta = project_meta.get_tag_meta("fruit_name")
     if label.obj_class.name == "lemon":
-        # Get tag sly id
-        tag_meta = project_meta.get_tag_meta("fruit_name")
         api.advanced.add_tag_to_object(tag_meta_id=tag_meta.sly_id, figure_id=figure_id, value="lemon")
     elif label.obj_class.name == "kiwi":
-        tag_meta = project_meta.get_tag_meta("fruit_name")
         api.advanced.add_tag_to_object(tag_meta_id=tag_meta.sly_id, figure_id=figure_id, value="kiwi")
 ```
