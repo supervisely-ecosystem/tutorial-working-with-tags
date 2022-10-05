@@ -1,6 +1,6 @@
 # Image and Objects Tags
 
-[Read this tutorial in developer portal.](https://developer.supervise.ly/getting-started/image-and-objects-tags)
+[Read this tutorial in developer portal.](https://developer.supervise.ly/getting-started/image-and-object-tags)
 
 ## Introduction
 
