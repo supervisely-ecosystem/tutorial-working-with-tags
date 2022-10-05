@@ -348,9 +348,9 @@ for label in ann.labels:
     # get figure sly id
     figure_id = label.geometry.sly_id
     # get tag sly id
-    tag_meta = project_meta.get_tag_meta("fruit_name")
+    tag_meta = project_meta.get_tag_meta("imported_from")
     if label.obj_class.name == "lemon":
-        api.advanced.add_tag_to_object(tag_meta_id=tag_meta.sly_id, figure_id=figure_id, value="lemon")
+        api.advanced.add_tag_to_object(tag_meta_id=tag_meta.sly_id, figure_id=figure_id, value="Spain")
     elif label.obj_class.name == "kiwi":
-        api.advanced.add_tag_to_object(tag_meta_id=tag_meta.sly_id, figure_id=figure_id, value="kiwi")
+        api.advanced.add_tag_to_object(tag_meta_id=tag_meta.sly_id, figure_id=figure_id, value="Italy")
 ```
