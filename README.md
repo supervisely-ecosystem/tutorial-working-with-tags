@@ -257,7 +257,7 @@ project_meta_json = api.project.get_meta(id=project_id)
 project_meta = sly.ProjectMeta.from_json(data=project_meta_json)
 ```
 
-Get image id from image info (see part 3)
+Get image id from image info (see [part 3](#part-3-create-tags-and-update-annotation-on-server))
 
 ```python
 image_id = image_info.id
