@@ -4,7 +4,7 @@
 
 ## Introduction
 
-In this tutorial we will be focusing on working with tags using Supervisely SDK. We'll go through complete cycle from creating TagMeta to assigning Tags to images and objects directly.
+In this tutorial we will be focusing on working with tags using Supervisely SDK. We'll go through complete cycle from creating TagMeta in project to assigning Tags to images and objects directly.
 
 You will learn:
 1) how to create tags for different tasks and scenarios with various parameters.
