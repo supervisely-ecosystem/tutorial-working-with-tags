@@ -8,8 +8,8 @@ In this tutorial we will be focusing on working with tags using Supervisely SDK.
 
 You will learn:
 1) how to create tags for different tasks and scenarios with various parameters.
-2) how to add tags to project
-3) how to assign tags to images and objects
+2) how to create tags (`sly.TagMeta`) in project
+3) how to assign tags (`sly.Tag`) to images and objects
 
 📗 Everything you need to reproduce [this tutorial is on GitHub](https://github.com/supervisely-ecosystem/tutorial-working-with-tags): source code and demo data.
 
@@ -69,14 +69,14 @@ api = sly.Api()
 ### Create Tag Meta
 
 TagMeta object contains general information about Tag.
-In order to create Tag itself you must create TagMeta object with parameters such as:
+In order to create Tag itself you must create TagMeta object (information about tags that we will create and assign to images or objects) with parameters such as:
 
-* name - name of the Tag (required)
-* value_type - restricts Tag to have a certain value type. Learn more [here](https://supervisely.readthedocs.io/en/v6.66.2/sdk/supervisely.annotation.tag_meta.TagValueType.html) (required)
-* possible_values - list of possible Tag values, used when Tag value type is "oneof_string", defaults to "None" (optional)
+* name (required) - name of the Tag
+* value_type - restricts Tag to have a certain value type. Learn more [here](https://supervisely.readthedocs.io/en/v6.66.2/sdk/supervisely.annotation.tag_meta.TagValueType.html) (required) 
+* possible_values - list of possible Tag values only when value type is "oneof_string" (optional)
 * color - color of the Tag, must be an RGB value, if not specified, random color will be generated (optional)
-* applicable_to - defines applicability of Tag only to images, objects or both, defaults to both. (optional)
-* applicable_classes - defines applicability of Tag only to certain classes. (optional)
+* applicable_to (optional) - defines if Tag can be assigned to ony images, to only objects or both. By default tag can be assigned to both images and objects defaults to both.
+* applicable_classes - defines applicability of Tag only to certain classes. (optional) List of strings (class names).
 
 Let's start with creating a simple TagMeta for Lemon. 
 This TagMeta object can be applied to both images and objects, and also to any class
@@ -112,9 +112,10 @@ print(lemon_tag_meta)
 # Applicable classes ['lemon']
 ```
 
-Now let's create a TagMeta for "kiwi" with "oneof_string" value type
+Now let's create a TagMeta "friut_size" with "oneof_string" value type. This tag can be assigned only to objects of any classes. 
 
 ```python
+friut_size
 possible_kiwi_values = ["small", "medium", "big"]
 kiwi_tag_meta = sly.TagMeta(
     name="kiwi",
@@ -135,7 +136,7 @@ Now we create a TagMeta with "any_number" value type for counting total fruits o
 
 ```python
 fruits_count_tag_meta = sly.TagMeta(
-    name="fruits count",
+    name="fruits_count",
     value_type=sly.TagValueType.ANY_NUMBER,
     applicable_to=sly.TagApplicableTo.IMAGES_ONLY
 )
