@@ -71,20 +71,27 @@ api = sly.Api()
 TagMeta object contains general information about Tag.
 In order to create Tag itself you must create TagMeta object (information about tags that we will create and assign to images or objects) with parameters such as:
 
-* name (required) - name of the Tag
-* value_type - restricts Tag to have a certain value type. Learn more [here](https://supervisely.readthedocs.io/en/v6.66.2/sdk/supervisely.annotation.tag_meta.TagValueType.html) (required) 
-* possible_values - list of possible Tag values only when value type is "oneof_string" (optional)
-* color - color of the Tag, must be an RGB value, if not specified, random color will be generated (optional)
-* applicable_to (optional) - defines if Tag can be assigned to ony images, to only objects or both. By default tag can be assigned to both images and objects defaults to both.
-* applicable_classes - defines applicability of Tag only to certain classes. (optional) List of strings (class names).
+* name (required) - name of the Tag.
+* value_type (required)- restricts Tag to have a certain value type. Available value types:
+  * NONE = "none"
+  * ANY_STRING = "any_string"
+  * ANY_NUMBER = "any_number"
+  * ONEOF_STRING = "oneof_string"
+* possible_values (required if value type is "oneof_string") - list of possible Tag values.
+* color (optional) - color of the Tag, must be an RGB value, if not specified, random color will be generated.
+* applicable_to (optional) - defines if Tag can be assigned to only images, to only objects or both. By default tag can be assigned to both images and objects.
+* applicable_classes (optional) - defines applicability of Tag only to certain classes. List of strings (class names).
 
-Let's start with creating a simple TagMeta for Lemon. 
-This TagMeta object can be applied to both images and objects, and also to any class
+Let's start with creating a simple TagMeta for showcasing, it can be applied to both images and objects, and also to any class. We won't use it for our project later.
+Tags with value type "none" can be used as "train" and "val" tags for example.
 
 ```python
-lemon_tag_meta = sly.TagMeta(name="lemon", value_type=sly.TagValueType.NONE)
-print(lemon_tag_meta)
-# Name: lemon
+tag_meta = sly.TagMeta(
+    name="simple_tag", 
+    value_type=sly.TagValueType.NONE
+    )
+print(tag_meta)
+# Name: simple_tag
 # Value type: none
 # Possible values: None
 # Hotkey
@@ -92,39 +99,57 @@ print(lemon_tag_meta)
 # Applicable classes []
 ```
 
-Let's change applicable classes of this TagMeta to class "lemon" only and make it applicable only to objects.
+Let's make this TagMeta applicable only to images.
 We can recreate TagMeta with additional parameters.
 Most supervisely classes are immutable, so you have to assign or reassign them to variables.
 
 ```python
-lemon_tag_meta = sly.TagMeta(
-    name="lemon", 
+tag_meta = sly.TagMeta(
+    name="simple_tag", 
     value_type=sly.TagValueType.NONE,
-    applicable_to=sly.TagApplicableTo.OBJECTS_ONLY, applicable_classes=["lemon"]
+    applicable_to=sly.TagApplicableTo.IMAGES_ONLY
     )
 
-print(lemon_tag_meta)
-# Name: lemon
+print(tag_meta)
+# Name: simple_tag
 # Value type: none
 # Possible values: None
 # Hotkey
-# Applicable to objectsOnly
-# Applicable classes ['lemon']
+# Applicable imagesOnly
+# Applicable classes []
 ```
 
-Now let's create a TagMeta "friut_size" with "oneof_string" value type. This tag can be assigned only to objects of any classes. 
+Now let's create a few TagMetas with different value types that we will apply to our project.
+
+We can start with creating fruit name TagMeta with "any_string" value type. This Tag can be assigned only to objects of classes "lemon" and "kiwi".
 
 ```python
-friut_size
-possible_kiwi_values = ["small", "medium", "big"]
-kiwi_tag_meta = sly.TagMeta(
-    name="kiwi",
+fruit_name_tag_meta = sly.TagMeta(
+    name="name",
+    applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
+    value_type=sly.TagValueType.ANY_STRING,
+    applicable_classes=["lemon", "kiwi"]
+)
+print(fruit_name_tag_meta)
+# Name: name
+# Value type: any_string
+# Possible values: None
+# Hotkey
+# Applicable to objectsOnly
+# Applicable classes ["lemon", "kiwi"]
+```
+
+ Create fruit size TagMeta with "oneof_string" value type. This Tag can be assigned only to objects of any classes and has possible values. 
+
+```python
+fruit_size_tag_meta = sly.TagMeta(
+    name="size",
     applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
     value_type=sly.TagValueType.ONEOF_STRING,
-    possible_values=possible_kiwi_values
+    possible_values=["small", "medium", "big"]
 )
-print(kiwi_tag_meta)
-# Name: kiwi
+print(fruit_size_tag_meta)
+# Name: size
 # Value type: oneof_string
 # Possible values: ["small", "medium", "big"]
 # Hotkey
@@ -132,7 +157,25 @@ print(kiwi_tag_meta)
 # Applicable classes []
 ```
 
-Now we create a TagMeta with "any_number" value type for counting total fruits on image.
+Now we create a TagMeta with "any_string" value type to enter the origin of the fruit into it. This Tag can be assigned only to objects of classes "lemon" and "kiwi".
+
+```python
+fruit_origin_tag_meta = sly.TagMeta(
+    name="imported_from", 
+    value_type=sly.TagValueType.ANY_STRING, 
+    applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
+    applicable_classes=["lemon", "kiwi"]
+    )
+print(fruit_origin_tag_meta)
+# Name: imported_from
+# Value type: any_string
+# Possible values: None
+# Hotkey
+# Applicable to objectsOnly
+# Applicable classes ["lemon", "kiwi"]
+```
+
+And one more TagMeta with "any_number" value type for counting total fruits on image. This Tag is applicable only to images.
 
 ```python
 fruits_count_tag_meta = sly.TagMeta(
@@ -141,7 +184,7 @@ fruits_count_tag_meta = sly.TagMeta(
     applicable_to=sly.TagApplicableTo.IMAGES_ONLY
 )
 print(fruits_count_tag_meta)
-# Name: fruits count
+# Name: fruits_count
 # Value type: any_number
 # Possible values: None
 # Hotkey
@@ -149,27 +192,10 @@ print(fruits_count_tag_meta)
 # Applicable classes []
 ```
 
-And one more TagMeta with "any_string" value type to enter the origin of the fruit into it
-
-```python
-fruit_origin_tag_meta = sly.TagMeta(
-    name="imported from", 
-    value_type=sly.TagValueType.ANY_STRING, 
-    applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
-    applicable_classes=["lemon", "kiwi"]
-    )
-print(fruit_origin_tag_meta)
-# Name: fruits count
-# Value type: any_string
-# Possible values: None
-# Hotkey
-# Applicable to objectsOnly
-# Applicable classes ["lemon", "kiwi"]
-```
 Bring all created TagMetas together in a list
 
 ```python
-tag_metas = [lemon_tag_meta, kiwi_tag_meta, fruits_count_tag_meta, fruit_origin_tag_meta]
+tag_metas = [fruit_name_tag_meta, fruit_size_tag_meta, fruit_origin_tag_meta, fruits_count_tag_meta]
 ```
 
 ## **Part 2.** Add TagMetas to project
@@ -199,7 +225,7 @@ Update project meta on Supervisely instance after adding Tag Metas to project me
 api.project.update_meta(id=project_id, meta=project_meta)
 ```
 
-![Updated Tags](https://user-images.githubusercontent.com/48913536/193874185-e05428f2-9c0b-44fc-83fc-5b5c8a452098.png)
+![Updated Tags](https://user-images.githubusercontent.com/48913536/194032896-109661c5-ebf4-4b5d-9f66-60669c3d338d.png)
 
 ## **Part 3.** Create Tags and update annotation on server
 
@@ -228,13 +254,15 @@ for dataset_id in dataset_ids:
         for label in ann.labels:
             new_label = None
             if label.obj_class.name == "lemon":
-                lemon_tag = sly.Tag(meta=lemon_tag_meta)
+                name_tag = sly.Tag(meta=fruit_name_tag_meta, value="lemon")
+                size_tag = sly.Tag(meta=fruit_size_tag_meta, value="medium")
                 origin_tag = sly.Tag(meta=fruit_origin_tag_meta, value="Spain")
-                new_label = label.add_tags([lemon_tag, origin_tag])
+                new_label = label.add_tags([name_tag, size_tag, origin_tag])
             elif label.obj_class.name == "kiwi":
-                kiwi_tag = sly.Tag(meta=kiwi_tag_meta, value="medium")
+                name_tag = sly.Tag(meta=fruit_name_tag_meta, value="kiwi")
+                size_tag = sly.Tag(meta=fruit_size_tag_meta, value="small")
                 origin_tag = sly.Tag(meta=fruit_origin_tag_meta, value="Italy")
-                new_label = label.add_tags([kiwi_tag, origin_tag])
+                new_label = label.add_tags([name_tag, size_tag, origin_tag])
             if new_label:
                 new_labels.append(new_label)
 
@@ -243,7 +271,7 @@ for dataset_id in dataset_ids:
         api.annotation.upload_ann(img_id=image_id, ann=ann)
 ```
 
-![Result](https://user-images.githubusercontent.com/48913536/193875426-75a16ebe-16bc-4c41-83b1-e07448dc749c.png)
+![Result](https://user-images.githubusercontent.com/48913536/194032163-23103100-81fd-45f0-819f-4abc87256ccb.png)
 
 # Advanced API
 
@@ -302,7 +330,7 @@ print(img_tag_metas_col)
 # +--------------+------------+-----------------+--------+---------------+--------------------+
 # |     Name     | Value type | Possible values | Hotkey | Applicable to | Applicable classes |
 # +--------------+------------+-----------------+--------+---------------+--------------------+
-# | fruits count | any_number |       None      |        |   imagesOnly  |         []         |
+# | fruits_count | any_number |       None      |        |   imagesOnly  |         []         |
 # +--------------+------------+-----------------+--------+---------------+--------------------+
 ```
 

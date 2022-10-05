@@ -10,48 +10,45 @@ api = sly.Api()
 # Part 1: Tag Meta #
 ####################
 
-# Let's start with creating a simple TagMeta for Lemon
-# This TagMeta object can be applied to both images and objects, and also to any class
-lemon_tag_meta = sly.TagMeta(name="lemon", value_type=sly.TagValueType.NONE)
-
-# Let's change applicable classes of this TagMeta to class "lemon" only and make it applicable only to objects
-# We can recreate TagMeta or clone already existing TagMeta with additional parameters
-lemon_tag_meta = lemon_tag_meta.clone(
-    applicable_to=sly.TagApplicableTo.OBJECTS_ONLY, applicable_classes=["lemon"]
+# Let's start with creating a simple TagMeta for fruit name
+fruit_name_tag_meta = sly.TagMeta(
+    name="name",
+    applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
+    value_type=sly.TagValueType.ANY_STRING,
+    applicable_classes=["lemon", "kiwi"],
 )
 
 # Now let's create a TagMeta for "kiwi" with "oneof_string" value type
-possible_kiwi_values = ["small", "medium", "big"]
-kiwi_tag_meta = sly.TagMeta(
-    name="kiwi",
+fruit_size_tag_meta = sly.TagMeta(
+    name="size",
     applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
     value_type=sly.TagValueType.ONEOF_STRING,
-    possible_values=possible_kiwi_values,
+    possible_values=["small", "medium", "big"],
 )
 
 # Now we create a TagMeta with "any_number" value type for counting fruits on image
-fruits_count_tag_meta = sly.TagMeta(
-    name="fruits count",
-    value_type=sly.TagValueType.ANY_NUMBER,
-    applicable_to=sly.TagApplicableTo.IMAGES_ONLY,
-)
-
-
-# and one more TagMeta with "any_string" value type to enter the origin of the fruit into it
 fruit_origin_tag_meta = sly.TagMeta(
-    name="imported from",
+    name="imported_from",
     value_type=sly.TagValueType.ANY_STRING,
     applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
     applicable_classes=["lemon", "kiwi"],
 )
 
 
+# and one more TagMeta with "any_string" value type to enter the origin of the fruit into it
+fruits_count_tag_meta = sly.TagMeta(
+    name="fruits_count",
+    value_type=sly.TagValueType.ANY_NUMBER,
+    applicable_to=sly.TagApplicableTo.IMAGES_ONLY,
+)
+
+
 # Bring all created TagMetas together in TagMetaCollection or list
 tag_metas = [
-    lemon_tag_meta,
-    kiwi_tag_meta,
-    fruits_count_tag_meta,
+    fruit_name_tag_meta,
+    fruit_size_tag_meta,
     fruit_origin_tag_meta,
+    fruits_count_tag_meta,
 ]
 
 ###################################
@@ -82,7 +79,7 @@ datasets = api.dataset.get_list(project_id)
 dataset_ids = [dataset.id for dataset in datasets]
 # iterate over all images in project datasets
 for dataset_id in dataset_ids:
-    # get list of images in dataset by id
+    # get list of images in dataset
     images_infos = api.image.get_list(dataset_id=dataset_id)
     for image_info in images_infos:
         # get image id from image info
@@ -101,16 +98,18 @@ for dataset_id in dataset_ids:
         for label in ann.labels:
             new_label = None
             if label.obj_class.name == "lemon":
-                lemon_tag = sly.Tag(meta=lemon_tag_meta)
+                name_tag = sly.Tag(meta=fruit_name_tag_meta, value="lemon")
+                size_tag = sly.Tag(meta=fruit_size_tag_meta, value="medium")
                 origin_tag = sly.Tag(meta=fruit_origin_tag_meta, value="Spain")
-                new_label = label.add_tags([lemon_tag, origin_tag])
+                new_label = label.add_tags([name_tag, size_tag, origin_tag])
             elif label.obj_class.name == "kiwi":
-                kiwi_tag = sly.Tag(meta=kiwi_tag_meta, value="medium")
+                name_tag = sly.Tag(meta=fruit_name_tag_meta, value="kiwi")
+                size_tag = sly.Tag(meta=fruit_size_tag_meta, value="small")
                 origin_tag = sly.Tag(meta=fruit_origin_tag_meta, value="Italy")
-                new_label = label.add_tags([kiwi_tag, origin_tag])
+                new_label = label.add_tags([name_tag, size_tag, origin_tag])
             if new_label:
                 new_labels.append(new_label)
 
-        # upload updated ann to Supervisely instance
+        # update and upload ann to Supervisely instance
         ann = ann.clone(labels=new_labels)
         api.annotation.upload_ann(img_id=image_id, ann=ann)
