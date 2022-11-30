@@ -1,6 +1,6 @@
 # Image and Objects Tags
 
-[Read this tutorial in developer portal.](https://developer.supervise.ly/getting-started/image-and-object-tags)
+[Read this tutorial in developer portal.](https://developer.supervise.ly/getting-started/python-sdk-tutorials/image-and-object-tags)
 
 ## Introduction
 
