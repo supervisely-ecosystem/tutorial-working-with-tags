@@ -10,7 +10,14 @@ api = sly.Api()
 # Part 1: Tag Meta #
 ####################
 
-# Let's start with creating a simple TagMeta for fruit name
+# Let's start with createing a simple TagMeta
+fruit_tag_meta = sly.TagMeta(
+    name="fruits",
+    applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
+    value_type=sly.TagValueType.NONE,
+)
+
+# Now let's create a simple TagMeta for fruit name
 fruit_name_tag_meta = sly.TagMeta(
     name="name",
     applicable_to=sly.TagApplicableTo.OBJECTS_ONLY,
@@ -45,6 +52,7 @@ fruits_count_tag_meta = sly.TagMeta(
 
 # Bring all created TagMetas together in TagMetaCollection or list
 tag_metas = [
+    fruit_tag_meta,
     fruit_name_tag_meta,
     fruit_size_tag_meta,
     fruit_origin_tag_meta,
@@ -67,8 +75,10 @@ for tag_meta in tag_metas:
         project_meta = project_meta.add_tag_meta(new_tag_meta=tag_meta)
 
 # Update project meta on Supervisely instance after adding
-# Tag Metas to project meta
+# Tag Metas to project meta and get updated project meta
 api.project.update_meta(id=project_id, meta=project_meta)
+project_meta_json = api.project.get_meta(id=project_id)
+project_meta = sly.ProjectMeta.from_json(data=project_meta_json)
 
 ######################################################################
 # Part 3. Create Tags and update annotation on server #
@@ -113,3 +123,15 @@ for dataset_id in dataset_ids:
         # update and upload ann to Supervisely instance
         ann = ann.clone(labels=new_labels)
         api.annotation.upload_ann(img_id=image_id, ann=ann)
+
+    # get tag meta from project meta
+    tag_meta = project_meta.get_tag_meta("fruits")
+
+    # create a list of images ids from images infos
+    image_ids = [image_info.id for image_info in images_infos]
+
+    # get tag meta id
+    tag_meta_id = tag_meta.sly_id
+
+    # update tags in batches.
+    api.image.add_tag_batch(image_ids, tag_meta_id, value=None, tag_meta=tag_meta)
