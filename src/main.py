@@ -64,7 +64,7 @@ tag_metas = [
 ###################################
 
 # Get project meta from server
-project_id = int(os.environ["CONTEXT_PROJECTID"])
+project_id = sly.env.project_id()
 project_meta_json = api.project.get_meta(id=project_id)
 project_meta = sly.ProjectMeta.from_json(data=project_meta_json)
 
