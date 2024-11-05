@@ -14,7 +14,7 @@ You will learn:
 
 ## How to debug this tutorial
 
-**Step 1.** Prepare `~/supervisely.env` file with credentials. [Learn more here.](https://developer.supervise.ly/getting-started/basics-of-authentication#how-to-use-in-python)
+**Step 1.** Prepare `~/supervisely.env` file with credentials. [Learn more here.](https://developer.supervisely.com/getting-started/basics-of-authentication#how-to-use-in-python)
 
 **Step 2.** Clone [repository](https://github.com/supervisely-ecosystem/tutorial-working-with-tags) with source code and demo data and create [Virtual Environment](https://docs.python.org/3/library/venv.html).
 
@@ -30,7 +30,7 @@ cd tutorial-working-with-tags
 code -r .
 ```
 
-**Step 4.** Get [**Lemons (Annotated)**](https://ecosystem.supervise.ly/projects/lemons-annotated) project from ecosystem. Lemons (Annotated) is an example project with annotated lemons and kiwi fruits, with 6 images in it.
+**Step 4.** Get [**Lemons (Annotated)**](https://ecosystem.supervisely.com/projects/lemons-annotated) project from ecosystem. Lemons (Annotated) is an example project with annotated lemons and kiwi fruits, with 6 images in it.
 
 <figure><img src="https://user-images.githubusercontent.com/48913536/193692418-731fa985-4958-4a42-893a-411e558faa04.png" alt=""><figcaption></figcaption></figure>
 
