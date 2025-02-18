@@ -136,3 +136,26 @@ for dataset_id in dataset_ids:
 
     # update tags in batches.
     api.image.add_tag_batch(image_ids, tag_meta_id, value=None, tag_meta=tag_meta)
+
+######################################################################
+# Retrieve images with object tags of interest
+######################################################################
+
+target_imageids = []
+# Iterate over each dataset
+for dataset in api.dataset.get_list(project_id):
+    # Get only images that contain object tags
+    filters = [{"type": "objects_tag", "data": {"include": True}}]
+    images = api.image.get_filtered_list(dataset.id, filters)
+    # Iterate over images in batches
+    for batch_infos in sly.batched(images, batch_size=500):
+        batch_ids = [info.id for info in batch_infos]
+        # Download annotations for batch images
+        ann_infos = api.annotation.download_batch(dataset.id, batch_ids)
+        # Extract image ID if any object on an image contains more than 1 tag
+        for ann_info in ann_infos:
+            ann = sly.Annotation.from_json(ann_info.annotation, project_meta)
+            if any([len(label.tags) > 1 for label in ann.labels]):
+                target_imageids.append(ann_info.image_id)
+print(target_imageids)
+# [31927, 31933, 31968, 32009, 32155, 32366]
